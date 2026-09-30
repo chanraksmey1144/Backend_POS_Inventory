@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('role_id')->nullable()->after('id')->constrained('roles')->restrictOnDelete();
+            $table->foreignId('branch_id')->nullable()->after('role_id')->constrained('branches')->nullOnDelete();
+            $table->string('phone', 20)->nullable()->after('password');
+            $table->enum('status', ['active', 'inactive'])->default('active')->after('phone');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['branch_id']);
+            $table->dropForeign(['role_id']);
+            $table->dropColumn(['role_id', 'branch_id', 'phone', 'status']);
+        });
+    }
+};
